@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Attendance Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .student {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      max-width: 400px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .present {
+      background-color: #e0ffe0;
+    }
+    .absent {
+      background-color: #ffe0e0;
+    }
+  </style>
+</head>
+<body>
+  <h2>📋 Attendance Manager</h2>
+  <div id="root"></div>
+
+  <!-- React & Babel CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Main JS without JSX -->
+  <script>
+    const { useState } = React;
+
+    function App() {
+      const [students, setStudents] = useState([
+        { id: 1, name: "Aishwarya", present: true },
+        { id: 2, name: "Aaradhana", present: false },
+        { id: 3, name: "Neha", present: true },
+        { id: 4, name: "Nihal", present: false },
+        { id: 5, name: "Monith", present: true },
+      ]);
+
+      const [filter, setFilter] = useState("All");
+
+      const toggleAttendance = (id) => {
+        const updated = students.map(s =>
+          s.id === id ? { ...s, present: !s.present } : s
+        );
+        setStudents(updated);
+      };
+
+      const filteredStudents = students.filter(student => {
+        if (filter === "All") return true;
+        return filter === "Present" ? student.present : !student.present;
+      });
+
+      const presentCount = students.filter(s => s.present).length;
+
+      return React.createElement("div", null,
+        React.createElement("label", null,
+          "Filter: ",
+          React.createElement("select", {
+            value: filter,
+            onChange: (e) => setFilter(e.target.value),
+            style: { marginLeft: "10px" }
+          },
+            React.createElement("option", { value: "All" }, "All"),
+            React.createElement("option", { value: "Present" }, "Present"),
+            React.createElement("option", { value: "Absent" }, "Absent")
+          )
+        ),
+        React.createElement("ul", { style: { listStyle: "none", padding: 0, marginTop: "20px" } },
+          filteredStudents.map(student =>
+            React.createElement("li", {
+              key: student.id,
+              className: `student ${student.present ? 'present' : 'absent'}`
+            },
+              React.createElement("span", null,
+                React.createElement("strong", null, student.name + " "),
+                student.present ? "✅ Present" : "❌ Absent"
+              ),
+              React.createElement("button", {
+                onClick: () => toggleAttendance(student.id)
+              }, "Toggle")
+            )
+          )
+        ),
+        React.createElement("p", null,
+          "🎯 ",
+          React.createElement("strong", null, "Total Present: "),
+          presentCount + " / " + students.length
+        )
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
